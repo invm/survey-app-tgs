@@ -14,22 +14,48 @@ const Survey = props => {
                 <h4 style={{ fontSize: '3rem' }}>Survey Not Found</h4>
             </div>
         );
+    const { category, name, questions, voted } = survey;
     return (
-        <div>
-            <div className='card-header'>
-                {' '}
-                <h5>Category</h5>
-            </div>
-            <div className='card-body'>
-                <h6>Here goes the question</h6>
-                <label style={{ color: 'black' }}>
-                    <input name='group1' type='radio' />
-                    <span>Red</span>
-                </label>
-                <label style={{ color: 'black' }}>
-                    <input name='group1' type='radio' />
-                    <span>Yellow</span>
-                </label>
+        <div className='card fade'>
+            <div className='card-content'>
+                <div className='card-header'>
+                    {' '}
+                    <h5>{category}</h5>
+                </div>
+                <div className='card-body'>
+                    <h6>{name}</h6>
+                    <ul>
+                        {questions.map((question, i) => (
+                            <li key={question.id}>
+                                <h6>
+                                    {i + 1}
+                                    {': '}
+                                    {question.question}
+                                </h6>
+                                <div>
+                                    {question.answers.map(answer =>
+                                        voted ? (
+                                            <p key={answer.id}>
+                                                {answer.answer} -> {answer.count}
+                                                {' votes.'}
+                                            </p>
+                                        ) : (
+                                            <label key={answer.id} style={{ color: 'black' }}>
+                                                <input name={`${question.id}`} type='radio' />
+                                                <span>{answer.answer}</span>
+                                            </label>
+                                        )
+                                    )}
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+                <div className='card-action'>
+                    <button className='hoverable mx-2 waves-effect waves-light btn-large purple darken-4'>
+                        Save Vote! <i className='material-icons left'>how_to_vote</i>
+                    </button>
+                </div>
             </div>
         </div>
     );

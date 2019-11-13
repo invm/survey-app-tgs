@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Home = () => {
     return (
-        <div className='row mx-2'>
+        <div className={`row mx-2 fade`}>
             <div className='col s12 center container '>
                 <div className='card-panel '>
                     <div className='purple-text text-darken-4 '>

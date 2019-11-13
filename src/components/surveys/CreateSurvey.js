@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import uuid from 'uuid';
+import { connect } from 'react-redux';
+import { createSurvey } from '../../actions/surveyActions';
 
-const CreateSurvey = () => {
+const CreateSurvey = props => {
     const [survey, setSurvey] = useState({
-        category: '',
+        id: uuid.v4(),
+        category: 'Sports',
         name: '',
         questions: []
     });
@@ -30,6 +33,7 @@ const CreateSurvey = () => {
         ]
     });
     const [newCat, setNewCat] = useState('');
+    // @todo fetch categories from store
     const [categories, setCategories] = useState(['Sports', 'Politics', 'Hobbies', 'Programming', 'Web Development']);
 
     const handleSelect = e => {
@@ -77,7 +81,8 @@ const CreateSurvey = () => {
     const handleNewQuestion = e => {
         e.preventDefault();
         // If the question is filled and all answers are field than save the question
-        if (currentQuestion.question !== '' && currentQuestion.answers.filter(answer => answer.answer != '').length === 4) {
+        if (currentQuestion.question !== '' && currentQuestion.answers.filter(answer => answer.answer !== '').length === 4) {
+            delete currentQuestion.new;
             setSurvey({
                 ...survey,
                 questions: [...survey.questions, currentQuestion]
@@ -135,8 +140,14 @@ const CreateSurvey = () => {
             questions: survey.questions.filter(question => question.id !== id)
         });
     };
+
+    const handleCreateSurvey = e => {
+        e.preventDefault();
+        props.createSurvey(survey);
+        props.history.push('/surveys');
+    };
     return (
-        <div className='card'>
+        <div className='card fade'>
             <h4 className='center' style={{ paddingTop: '2rem' }}>
                 Create new survey
             </h4>
@@ -266,7 +277,7 @@ const CreateSurvey = () => {
                         </div>
                     </div>
                 ))}
-                <button className='mx-2 waves-effect waves-light btn-large purple darken-4'>
+                <button onClick={handleCreateSurvey} className='mx-2 waves-effect waves-light btn-large purple darken-4'>
                     Create Survey <i className='material-icons left'>assignment</i>
                 </button>
             </form>
@@ -274,4 +285,8 @@ const CreateSurvey = () => {
     );
 };
 
-export default CreateSurvey;
+const mapStateToProps = state => ({
+    survey: state.survey
+});
+
+export default connect(mapStateToProps, { createSurvey })(CreateSurvey);

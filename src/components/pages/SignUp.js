@@ -6,7 +6,7 @@ const SignIn = () => {
         // Handle login attempt
     };
     return (
-        <div className='row'>
+        <div className='row fade'>
             <form className='col s12'>
                 <div className='row'>
                     <div className='input-field col s6'>
