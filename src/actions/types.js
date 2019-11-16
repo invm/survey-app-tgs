@@ -1,1 +1,10 @@
 export const CREATE_SURVEY = 'CREATE_SURVEY';
+export const EDIT_SURVEY = 'EDIT_SURVEY';
+export const DELETE_SURVEY = 'DELETE_SURVEY';
+export const ADD_CATEGORY = 'ADD_CATEGORY';
+export const REGISTER_ATTEMPT = 'REGISTER_ATTEMPT';
+export const REGISTER_FAIL = 'REGISTER_FAIL';
+export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
+export const LOGOUT = 'LOGOUT';
+export const SET_ERROR = 'SET_ERROR';
+export const CLEAR_ERROR = 'CLEAR_ERROR';

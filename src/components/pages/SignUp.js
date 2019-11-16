@@ -1,41 +1,68 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
 
-const SignIn = () => {
+import { register } from '../../actions/authActions';
+
+import Spinner from '../layout/Spinner';
+
+const SignIn = props => {
+    const loading = props.loading;
+    const [user, setUser] = useState({
+        fname: '',
+        lname: '',
+        email: '',
+        password: ''
+    });
+
+    const handleInput = e => {
+        setUser({
+            ...user,
+            [e.target.id]: e.target.value
+        });
+    };
+
     const handleSubmit = e => {
         e.preventDefault();
-        // Handle login attempt
+        props.register(user);
     };
+
     return (
         <div className='row fade'>
             <form className='col s12'>
                 <div className='row'>
                     <div className='input-field col s6'>
-                        <input id='first_name' type='text' className='validate' />
-                        <label htmlFor='first_name'>First Name</label>
+                        <input onChange={handleInput} value={user.fname} id='fname' type='text' className='validate' />
+                        <label htmlFor='fname'>First Name</label>
                     </div>
                     <div className='input-field col s6'>
-                        <input id='last_name' type='text' className='validate' />
-                        <label htmlFor='last_name'>Last Name</label>
+                        <input onChange={handleInput} value={user.lname} id='lname' type='text' className='validate' />
+                        <label htmlFor='lname'>Last Name</label>
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-field col s12'>
-                        <input id='password' type='password' className='validate' />
-                        <label htmlFor='password'>Password</label>
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='input-field col s12'>
-                        <input id='email' type='email' className='validate' />
+                        <input onChange={handleInput} value={user.email} id='email' type='email' className='validate' />
                         <label htmlFor='email'>Email</label>
                     </div>
                 </div>
+                <div className='row'>
+                    <div className='input-field col s12'>
+                        <input onChange={handleInput} value={user.password} id='password' type='password' className='validate' />
+                        <label htmlFor='password'>Password</label>
+                    </div>
+                </div>
+
                 <button onClick={handleSubmit} className='mx-2 waves-effect waves-light btn-large purple darken-4'>
-                    Sign Up<i className='material-icons left'>person_add</i>
+                    Sign Up
+                    {loading ? <Spinner size={1} /> : <i className='material-icons left'>person_add</i>}
                 </button>
             </form>
         </div>
     );
 };
 
-export default SignIn;
+const mapStateToProps = state => ({
+    loading: state.auth.loading
+});
+
+export default connect(mapStateToProps, { register })(SignIn);

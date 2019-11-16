@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Spinner from '../layout/Spinner';
 
 const SignIn = () => {
     const handleSubmit = e => {
         e.preventDefault();
         // Handle login attempt
     };
+    const loading = false;
     return (
         <div className='row fade'>
             <form className='col s12'>
@@ -23,8 +25,15 @@ const SignIn = () => {
                 </div>
                 <div className='center'>
                     <button onClick={handleSubmit} className='mx-2 waves-effect waves-light btn-large purple darken-4'>
-                        Sign In <i className='material-icons left'>perm_identity</i>
+                        {loading ? (
+                            <Spinner size={1} />
+                        ) : (
+                            <>
+                                Sign In <i className='material-icons left'>perm_identity</i>
+                            </>
+                        )}
                     </button>
+
                     <p>Not a registered user?</p>
                     <Link to='/signup'>
                         <button className='mx-2 waves-effect waves-light btn-large purple darken-4'>

@@ -46,7 +46,7 @@ const Dashboard = ({ history }) => {
                 <div className='col s12'>
                     <h5>Surveys</h5>
                     <div style={{ marginLeft: '2rem' }}>
-                        <Link to='/create' className='black-text'>
+                        <Link to='/survey' className='black-text'>
                             <p>Create New Survey</p>
                         </Link>
                         <Link to={{ pathname: '/admin', action: 'edit-survey' }} className='black-text'>

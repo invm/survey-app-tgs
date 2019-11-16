@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 const Survey = props => {
     let survey = null;
@@ -6,6 +7,7 @@ const Survey = props => {
     if (props.location.survey) survey = props.location.survey;
     else {
         // If not passed from survey list,try and fetch from db the survey
+        survey = props.surveys.find(survey => survey.id === Number(props.match.params.id));
     }
     // If no such survey, probably a mistake, show survey not found
     if (!survey)
@@ -67,4 +69,8 @@ const flexBetweenCenter = {
     textAlign: 'center'
 };
 
-export default Survey;
+const mapStateToProps = state => ({
+    surveys: state.survey.surveys
+});
+
+export default connect(mapStateToProps, null)(Survey);

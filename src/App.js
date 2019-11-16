@@ -6,16 +6,18 @@ import Dashboard from './components/pages/Dashboard';
 import Home from './components/pages/Home';
 import SignIn from './components/pages/SignIn';
 import SignUp from './components/pages/SignUp';
-import CreateSurvey from './components/surveys/CreateSurvey';
+import MakeSurvey from './components/surveys/MakeSurvey';
 import Survey from './components/surveys/Survey';
 import SurveyList from './components/surveys/SurveyList';
 import Admin from './components/pages/Admin';
 import User from './components/pages/User';
+import ErrorCard from './components/layout/ErrorCard';
 
 const App = () => {
     return (
         <Router>
             <Navbar />
+            <ErrorCard />
             <div className='container '>
                 <Switch>
                     <Route exact path='/' component={Home} />
@@ -25,7 +27,7 @@ const App = () => {
                     <Route exact path='/user' component={User} />
                     <Route exact path='/surveys' render={props => <SurveyList {...props} />} />
                     <Route exact path='/surveys/:id' component={Survey} />
-                    <Route exact path='/create' render={props => <CreateSurvey {...props} />} />
+                    <Route exact path='/survey' component={MakeSurvey} />
                     <Route exact path='/dashboard' component={Dashboard} />
                     <Route render={() => <Redirect to='/' />} />
                 </Switch>

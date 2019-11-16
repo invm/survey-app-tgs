@@ -17,8 +17,9 @@ const Home = () => {
                         </div>
                         <div className='row'>
                             <Link to='/signin'>
-                                <button className='mx-2 waves-effect waves-light btn-large purple darken-4'>
-                                    Sign In <i className='material-icons left'>perm_identity</i>
+                                <button className='mx-2 waves-effect waves-light btn-large purple darken-4 '>
+                                    <span>Sign In</span>
+                                    <i className='material-icons left'>perm_identity</i>
                                 </button>
                             </Link>
                         </div>
