@@ -1,8 +1,9 @@
-import { LOGOUT, REGISTER_SUCCESS, REGISTER_ATTEMPT, REGISTER_FAIL } from '../actions/types';
+import { LOGOUT, REGISTER_SUCCESS, REGISTER_ATTEMPT, REGISTER_FAIL, CLEAR_ERROR } from '../actions/types';
 
 const initialState = {
     isAuthenticated: null,
     role: '',
+    error: null,
     user: null,
     usersForAdmin: [],
     loading: false
@@ -16,16 +17,21 @@ export default function(state = initialState, action) {
             };
         case REGISTER_SUCCESS:
             return {
+                ...state,
                 isAuthenticated: true,
-                role: 'admin',
-                user: null,
-                usersForAdmin: [],
-                loading: false
+                role: 'admin'
             };
         case REGISTER_FAIL:
         case LOGOUT:
             return {
-                ...initialState
+                ...state,
+                error: action.payload,
+                loading: false
+            };
+        case CLEAR_ERROR:
+            return {
+                ...state,
+                error: null
             };
         default:
             return state;

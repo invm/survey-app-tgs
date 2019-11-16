@@ -36,9 +36,9 @@ export const register = ({ email, password }) => dispatch => {
             })
         )
         .catch(function(error) {
-            setError(error.message);
             dispatch({
-                type: REGISTER_FAIL
+                type: REGISTER_FAIL,
+                payload: error.message
             });
         });
 };

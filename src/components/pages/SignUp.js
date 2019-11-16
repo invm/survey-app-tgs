@@ -1,18 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import { register } from '../../actions/authActions';
+import { setError } from '../../actions/errorActions';
 
 import Spinner from '../layout/Spinner';
 
 const SignIn = props => {
-    const loading = props.loading;
+    const { loading, error } = props.auth;
+    console.log(loading, error);
     const [user, setUser] = useState({
         fname: '',
         lname: '',
         email: '',
         password: ''
     });
+
+    useEffect(() => {
+        if (error) props.setError(error);
+    }, [error]);
 
     const handleInput = e => {
         setUser({
@@ -62,7 +68,7 @@ const SignIn = props => {
 };
 
 const mapStateToProps = state => ({
-    loading: state.auth.loading
+    auth: state.auth
 });
 
-export default connect(mapStateToProps, { register })(SignIn);
+export default connect(mapStateToProps, { register, setError })(SignIn);
