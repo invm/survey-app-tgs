@@ -108,7 +108,7 @@ const Dashboard = props => {
         <div className='card fade'>
             <div className='row'>
                 <div className='col s6'>
-                    <h5>Welcome {user.displayName}</h5>
+                    <h5>Welcome {`${user.fname} ${user.lname}`}</h5>
                 </div>
                 <div className='col s4 offset-s2 center'>
                     <h5>Role: {admin ? 'Admin' : 'Voter'}</h5>

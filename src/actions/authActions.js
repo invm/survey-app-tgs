@@ -24,7 +24,9 @@ export const register = ({ email, password, fname, lname }) => dispatch => {
                 .doc(credentials.user.uid)
                 .set({
                     fname,
-                    lname
+                    lname,
+                    coupons: [],
+                    completedSurveys: []
                 });
         })
         .catch(error =>
@@ -79,11 +81,11 @@ export const updateUser = ({ fname, lname }) => dispatch => {
         .then(() => {
             db.collection('users')
                 .doc(user.uid)
-                .set({
-                    fname,
-                    lname
+                .update({
+                    fname: fname,
+                    lname: lname
                 })
-                .then(() => dispatch({ type: EDIT_USER_SUCCESS, payload: user }));
+                .then(() => dispatch({ type: EDIT_USER_SUCCESS, payload: { fname, lname } }));
         })
         .catch(error => dispatch({ type: EDIT_USER_FAIL, payload: error.message }));
 };

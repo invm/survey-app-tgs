@@ -4,7 +4,10 @@ const initialState = {
     isAuthenticated: null,
     admin: false,
     error: null,
-    user: null,
+    user: {
+        coupons: [],
+        completedSurveys: []
+    },
     usersForAdmin: [],
     loading: false
 };
@@ -21,7 +24,7 @@ export default function(state = initialState, action) {
         case EDIT_USER_SUCCESS:
             return {
                 ...state,
-                user: action.payload,
+                user: { ...state.user, fname: action.payload.fname, lname: action.payload.lname },
                 loading: false,
                 // This is not an error but an indication for the change
                 error: 'Successfully updated'

@@ -19,7 +19,10 @@ const User = props => {
                 item.className = 'active';
             }
         })();
-        if (error) props.setError(error);
+        if (error) {
+            props.setError(error);
+            setTimeout(() => props.history.push('/'), 1000);
+        }
         //eslint-disable-next-line
     }, [isAuthenticated, admin, action, error]);
 
@@ -67,7 +70,7 @@ const User = props => {
                                 ))}
                             </>
                         ) : (
-                            <Link to='/dashboard'>
+                            <Link to='/surveyslist'>
                                 <button style={{ margin: '2rem 0' }} className='mx-2 waves-effect waves-light btn-large purple darken-4'>
                                     Complete surveys to earn coupons <i className='material-icons left'>how_to_vote</i>
                                 </button>
@@ -83,12 +86,6 @@ const User = props => {
                     <div className='col s8 offset-s2'>
                         <h6>Change User Info</h6>
                         <form className='col s6 offset-s3' id='add-admin' onSubmit={() => {}}>
-                            <div className='row'>
-                                <div className=' input-field col s12'>
-                                    <input required value={userInfo.email} onChange={handleInput} id='email' type='email' className='validate' />
-                                    <label htmlFor='email'>Email</label>
-                                </div>
-                            </div>
                             <div className='row'>
                                 <div className=' input-field col s12'>
                                     <input required value={userInfo.fname} onChange={handleInput} id='fname' type='text' className='validate' />
