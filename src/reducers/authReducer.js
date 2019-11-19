@@ -1,4 +1,4 @@
-import { LOGOUT, REGISTER_SUCCESS, REGISTER_ATTEMPT, REGISTER_FAIL, CLEAR_ERROR, LOGIN_ATTEMPT, LOGIN_FAIL, LOGIN_SUCCESS, USER_STATE_CHANGED } from '../actions/types';
+import { LOGOUT, REGISTER_SUCCESS, REGISTER_ATTEMPT, REGISTER_FAIL, CLEAR_ERROR, LOGIN_ATTEMPT, LOGIN_FAIL, LOGIN_SUCCESS, USER_STATE_CHANGED, EDIT_USER_SUCCESS, EDIT_USER_FAIL, EDIT_USER_ATTEMPT } from '../actions/types';
 
 const initialState = {
     isAuthenticated: null,
@@ -15,16 +15,27 @@ export default function(state = initialState, action) {
                 ...state,
                 isAuthenticated: action.payload.isAuthenticated,
                 loading: false,
-                user: action.payload.user
+                user: action.payload.user,
+                admin: action.payload.admin
+            };
+        case EDIT_USER_SUCCESS:
+            return {
+                ...state,
+                user: action.payload,
+                loading: false,
+                // This is not an error but an indication for the change
+                error: 'Successfully updated'
             };
         case REGISTER_ATTEMPT:
         case LOGIN_ATTEMPT:
+        case EDIT_USER_ATTEMPT:
             return {
                 ...state,
                 loading: true
             };
         case REGISTER_FAIL:
         case LOGIN_FAIL:
+        case EDIT_USER_FAIL:
         case LOGOUT:
             return {
                 ...state,

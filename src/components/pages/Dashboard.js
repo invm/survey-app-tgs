@@ -86,6 +86,16 @@ const Dashboard = props => {
                     </div>
                 </div>
             </div>
+            <div className='row'>
+                <div className='col s12'>
+                    <h5>Admins</h5>
+                    <div style={{ marginLeft: '2rem' }}>
+                        <Link to={{ pathname: '/admin', action: 'add-admin' }} className='black-text'>
+                            <p>Add Admin</p>
+                        </Link>
+                    </div>
+                </div>
+            </div>
         </>
     );
     if (loading)
@@ -94,7 +104,6 @@ const Dashboard = props => {
                 <Spinner color={'purple'} size={20} />
             </div>
         );
-    console.log(user);
     return (
         <div className='card fade'>
             <div className='row'>

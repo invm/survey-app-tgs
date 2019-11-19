@@ -11,14 +11,17 @@ import {
     FETCH_SURVEYS_ATTEMPT,
     FETCH_SURVEYS_SUCCESS,
     FETCH_SURVEYS_FAIL,
-    FETCH_CATEGORIES,
+    FETCH_CATEGORIES_SUCCESS,
     FETCH_CATEGORIES_ERROR,
     ADD_CATEGORY_ATTEMPT,
     ADD_CATEGORY,
     ADD_CATEGORY_ERROR,
     DELETE_CATEGORY_ATTEMPT,
     DELETE_CATEGORY_SUCCESS,
-    DELETE_CATEGORY_FAIL
+    DELETE_CATEGORY_FAIL,
+    REDEEM_COUPON_ATTEMPT,
+    REDEEM_COUPON_SUCCESS,
+    REDEEM_COUPON_FAIL
 } from './types';
 
 import { db } from '../config/fb';
@@ -102,7 +105,7 @@ export const fetchCategories = () => dispatch => {
                 categories.push({ ...doc.data(), id: doc.id });
             });
             dispatch({
-                type: FETCH_CATEGORIES,
+                type: FETCH_CATEGORIES_SUCCESS,
                 payload: categories
             });
         })
@@ -139,6 +142,27 @@ export const deleteCategory = id => dispatch => {
         .catch(error =>
             dispatch({
                 type: DELETE_CATEGORY_FAIL,
+                payload: error.message
+            })
+        );
+};
+
+export const redeemCoupon = (userId, id) => dispatch => {
+    dispatch({ type: REDEEM_COUPON_ATTEMPT });
+    db.collection('users')
+        .doc(userId)
+        .update({
+            coupons: db.FieldValue.arrayRemove({ id: id })
+        })
+        .then(() => {
+            return dispatch({
+                type: REDEEM_COUPON_SUCCESS,
+                payload: id
+            });
+        })
+        .catch(error =>
+            dispatch({
+                type: REDEEM_COUPON_FAIL,
                 payload: error.message
             })
         );

@@ -12,7 +12,7 @@ import {
     FETCH_SURVEYS_SUCCESS,
     FETCH_SURVEYS_ATTEMPT,
     FETCH_SURVEYS_FAIL,
-    FETCH_CATEGORIES,
+    FETCH_CATEGORIES_SUCCESS,
     ADD_CATEGORY_ATTEMPT,
     ADD_CATEGORY_ERROR,
     DELETE_CATEGORY_ATTEMPT,
@@ -31,11 +31,21 @@ const initialState = {
 export default function(state = initialState, action) {
     switch (action.type) {
         case FETCH_SURVEYS_ATTEMPT:
+        case CREATE_SURVEY_ATTEMPT:
+        case EDIT_SURVEY_ATTEMPT:
+        case DELETE_SURVEY_ATTEMPT:
+        case DELETE_CATEGORY_ATTEMPT:
+        case ADD_CATEGORY_ATTEMPT:
             return {
                 ...state,
                 surveyLoading: true
             };
         case FETCH_SURVEYS_FAIL:
+        case ADD_CATEGORY_ERROR:
+        case DELETE_CATEGORY_FAIL:
+        case CREATE_SURVEY_FAIL:
+        case EDIT_SURVEY_FAIL:
+        case DELETE_SURVEY_FAIL:
             return {
                 ...state,
                 error: action.payload,
@@ -47,32 +57,10 @@ export default function(state = initialState, action) {
                 surveys: action.payload,
                 surveyLoading: false
             };
-        case CREATE_SURVEY_ATTEMPT:
-            return {
-                ...state,
-                surveyLoading: true
-            };
-        case CREATE_SURVEY_FAIL:
-            return {
-                ...state,
-                error: action.payload,
-                surveyLoading: false
-            };
         case CREATE_SURVEY_SUCCESS:
             return {
                 ...state,
-                surveys: [...state.surveys, action.payload]
-            };
-        case EDIT_SURVEY_ATTEMPT: {
-            return {
-                ...state,
-                surveyLoading: true
-            };
-        }
-        case EDIT_SURVEY_FAIL:
-            return {
-                ...state,
-                error: action.payload,
+                surveys: [...state.surveys, action.payload],
                 surveyLoading: false
             };
         case EDIT_SURVEY_SUCCESS:
@@ -86,32 +74,16 @@ export default function(state = initialState, action) {
                     return survey;
                 })
             };
-        case DELETE_SURVEY_ATTEMPT:
-            return {
-                ...state,
-                surveyLoading: true
-            };
-        case DELETE_SURVEY_FAIL:
-            return {
-                ...state,
-                error: action.payload,
-                surveyLoading: false
-            };
         case DELETE_SURVEY_SUCCESS:
             return {
                 ...state,
                 surveyLoading: false,
                 surveys: state.surveys.filter(survey => survey.id !== action.payload)
             };
-        case FETCH_CATEGORIES:
+        case FETCH_CATEGORIES_SUCCESS:
             return {
                 ...state,
                 categories: action.payload
-            };
-        case ADD_CATEGORY_ATTEMPT:
-            return {
-                ...state,
-                surveyLoading: true
             };
         case ADD_CATEGORY:
             return {
@@ -119,29 +91,13 @@ export default function(state = initialState, action) {
                 categories: [...state.categories, action.payload],
                 surveyLoading: false
             };
-        case ADD_CATEGORY_ERROR:
-            return {
-                ...state,
-                error: action.payload,
-                surveyLoading: false
-            };
-        case DELETE_CATEGORY_ATTEMPT:
-            return {
-                ...state,
-                surveyLoading: true
-            };
         case DELETE_CATEGORY_SUCCESS:
             return {
                 ...state,
                 categories: state.categories.filter(cat => cat.id !== action.payload),
                 surveyLoading: false
             };
-        case DELETE_CATEGORY_FAIL:
-            return {
-                ...state,
-                error: action.payload,
-                surveyLoading: false
-            };
+
         case CLEAR_ERROR:
             return {
                 ...state,

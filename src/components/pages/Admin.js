@@ -4,16 +4,17 @@ import Spinner from '../layout/Spinner';
 import { Link } from 'react-router-dom';
 import { addCategory, deleteSurvey, deleteCategory } from '../../actions/surveyActions';
 import { setError } from '../../actions/errorActions';
+import { functions } from '../../config/fb';
 
 const Admin = props => {
     const { location, history, survey } = props;
+    let { action } = location;
+    const { isAuthenticated, admin } = props.auth;
     const surveyLoading = survey.surveyLoading;
     const error = survey.error;
-    const role = 'admin';
-    const isAuthenticated = true;
-    const isAdmin = role === 'admin' ? true : false;
     const [newCat, setNewCat] = useState('');
-    if (!isAuthenticated || !isAdmin) history.push('/');
+    const [adminEmail, setAdminEmail] = useState('');
+    if (!isAuthenticated || !admin) history.push('/');
 
     // If not action have been passed via link, push back to dashboard
     if (!location.action) history.push('/dashboard');
@@ -39,7 +40,17 @@ const Admin = props => {
 
     const handleCategoryRemove = id => props.deleteCategory(id);
 
-    let action;
+    const addAdmin = e => {
+        e.preventDefault();
+        const form = document.querySelector('#add-admin');
+        const addAdminRole = functions.httpsCallable('addAdminRole');
+        addAdminRole({ email: form['email'].value })
+            .then(result => props.setError(result.data.message))
+            .catch(error => {
+                props.setError('Something went very wrong...');
+            });
+    };
+
     switch (location.action) {
         case 'edit-survey':
             action = (
@@ -139,6 +150,17 @@ const Admin = props => {
                 </div>
             );
             break;
+        case 'add-admin':
+            action = (
+                <div className='row fade' style={{ marginTop: '1rem', paddingTop: '2rem', paddingBottom: '2rem' }}>
+                    <form className='col s6 offset-s3' id='add-admin' onSubmit={addAdmin}>
+                        <h6 htmlFor='email'>Enter existing user's email</h6>
+                        <input value={adminEmail} onChange={e => setAdminEmail(e.target.value)} type='email' required id='email' />
+                        <input className='mx-2 waves-effect waves-light btn-large purple darken-4' type='submit' value='Add' />
+                    </form>
+                </div>
+            );
+            break;
         default:
             return <></>;
     }
@@ -153,7 +175,8 @@ const Admin = props => {
 };
 
 const mapStateToProps = state => ({
-    survey: state.survey
+    survey: state.survey,
+    auth: state.auth
 });
 
 export default connect(mapStateToProps, { addCategory, deleteSurvey, setError, deleteCategory })(Admin);
