@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
-const SurveySummary = ({ survey }) => {
-    const { category, id, name } = survey;
+const SurveySummary = props => {
+    const { category, id, name } = props.survey;
+    const { isAuthenticated, admin } = props.auth;
     return (
         <div className='card hoverable ' style={{ padding: '0.25rem' }}>
             {' '}
@@ -12,12 +14,18 @@ const SurveySummary = ({ survey }) => {
                 <Link
                     to={{
                         pathname: `/surveys/${id}`,
-                        survey: survey
+                        survey: props.survey
                     }}
                 >
-                    <button className='hoverable mx-2 waves-effect waves-light btn-large purple darken-4'>
-                        Vote Now! <i className='material-icons left'>thumbs_up_down</i>
-                    </button>
+                    {isAuthenticated && !admin ? (
+                        <button className='hoverable mx-2 waves-effect waves-light btn-large purple darken-4'>
+                            Vote Now! <i className='material-icons left'>thumbs_up_down</i>
+                        </button>
+                    ) : (
+                        <button className='hoverable mx-2 waves-effect waves-light btn-large purple darken-4'>
+                            Show Results! <i className='material-icons left'>thumbs_up_down</i>
+                        </button>
+                    )}
                 </Link>
             </div>
         </div>
@@ -31,4 +39,7 @@ const flexBetweenCenter = {
     alignItems: 'center'
 };
 
-export default SurveySummary;
+const mapStateToProps = state => ({
+    auth: state.auth
+});
+export default connect(mapStateToProps, null)(SurveySummary);

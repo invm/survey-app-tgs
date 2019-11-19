@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
-const Dashboard = ({ history }) => {
-    const role = 'admin';
-    const isAuthenticated = true;
-    let user = { name: 'Admin' };
-    if (role !== 'admin') user = { name: 'Michael' };
+import Spinner from '../layout/Spinner';
 
-    if (!isAuthenticated) history.push('/');
+const Dashboard = props => {
+    let { user, admin, isAuthenticated, loading } = props.auth;
+    useEffect(() => {
+        if ((!loading && !isAuthenticated) || !user) props.history.push('/');
+        //eslint-disable-next-line
+    }, [isAuthenticated]);
 
     const userLinks = (
         <>
@@ -15,7 +17,7 @@ const Dashboard = ({ history }) => {
                 <div className='col s12'>
                     <h5>Surveys</h5>
                     <div style={{ marginLeft: '2rem' }}>
-                        <Link to='/surveys' className='black-text'>
+                        <Link to='/surveyslist' className='black-text'>
                             <p>Available Surveys</p>
                         </Link>
                         <Link to={{ pathname: '/user', action: 'view-completed' }} className='black-text'>
@@ -86,14 +88,21 @@ const Dashboard = ({ history }) => {
             </div>
         </>
     );
+    if (loading)
+        return (
+            <div className='row' style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem' }}>
+                <Spinner color={'purple'} size={20} />
+            </div>
+        );
+    console.log(user);
     return (
         <div className='card fade'>
             <div className='row'>
                 <div className='col s6'>
-                    <h5>Welcome {user.name}</h5>
+                    <h5>Welcome {user.displayName}</h5>
                 </div>
                 <div className='col s4 offset-s2 center'>
-                    <h5>Role: {role === 'admin' ? 'Admin' : 'Voter'}</h5>
+                    <h5>Role: {admin ? 'Admin' : 'Voter'}</h5>
                 </div>
             </div>
             <div className='row'>
@@ -101,9 +110,13 @@ const Dashboard = ({ history }) => {
                     <h5>What would you like to do?</h5>
                 </div>
             </div>
-            {role === 'admin' ? adminLinks : userLinks}
+            {admin ? adminLinks : userLinks}
         </div>
     );
 };
 
-export default Dashboard;
+const mapStateToProps = state => ({
+    auth: state.auth,
+    categories: state.survey.categories
+});
+export default connect(mapStateToProps, null)(Dashboard);

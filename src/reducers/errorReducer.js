@@ -1,7 +1,7 @@
 import { SET_ERROR, CLEAR_ERROR } from '../actions/types';
 
 const initialState = {
-    message: 'Error message'
+    message: null
 };
 
 export default function(state = initialState, action) {

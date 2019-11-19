@@ -3,11 +3,10 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { logout } from '../../actions/authActions';
+import Spinner from './Spinner';
 
 const Navbar = props => {
-    const isAuthenticated = props.auth.isAuthenticated;
-    const role = props.auth.role;
-
+    const { role, isAuthenticated, loading } = props.auth;
     const onLogoutClick = e => {
         props.logout();
     };
@@ -53,9 +52,9 @@ const Navbar = props => {
                 </Link>
                 <ul id='nav-mobile' className='right '>
                     <li className='hide-on-small-only'>
-                        <Link to='/surveys'>Surveys</Link>
+                        <Link to='/surveyslist'>Surveys</Link>
                     </li>
-                    {isAuthenticated ? authLinks : guestLinks}
+                    {loading ? <Spinner button={true} size={1} /> : <>{isAuthenticated ? authLinks : guestLinks}</>}
                 </ul>
             </div>
         </nav>

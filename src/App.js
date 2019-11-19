@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import Navbar from './components/layout/Navbar';
 import Dashboard from './components/pages/Dashboard';
@@ -13,7 +14,14 @@ import Admin from './components/pages/Admin';
 import User from './components/pages/User';
 import ErrorCard from './components/layout/ErrorCard';
 
-const App = () => {
+import { fetchCategories, fetchSurveys } from './actions/surveyActions';
+
+const App = props => {
+    useEffect(() => {
+        props.fetchSurveys();
+        props.fetchCategories();
+        //eslint-disable-next-line
+    }, []);
     return (
         <Router>
             <Navbar />
@@ -23,10 +31,10 @@ const App = () => {
                     <Route exact path='/' component={Home} />
                     <Route exact path='/signin' component={SignIn} />
                     <Route exact path='/signup' component={SignUp} />
-                    <Route exact path='/admin' component={Admin} />} />
+                    <Route exact path='/admin' component={Admin} /> />
                     <Route exact path='/user' component={User} />
-                    <Route exact path='/surveys' render={props => <SurveyList {...props} />} />
-                    <Route exact path='/surveys/:id' component={Survey} />
+                    <Route exact path='/surveyslist' render={props => <SurveyList {...props} />} />
+                    <Route exact path='/surveys/:id' render={props => <Survey {...props} />} />
                     <Route exact path='/survey' component={MakeSurvey} />
                     <Route exact path='/dashboard' component={Dashboard} />
                     <Route render={() => <Redirect to='/' />} />
@@ -36,4 +44,4 @@ const App = () => {
     );
 };
 
-export default App;
+export default connect(null, { fetchSurveys, fetchCategories })(App);

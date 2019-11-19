@@ -1,7 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
-const Home = () => {
+import Spinner from '../layout/Spinner';
+
+const Home = props => {
+    const { isAuthenticated, loading } = props.auth;
+    useEffect(() => {
+        if (isAuthenticated) props.history.push('/dashboard');
+        // eslint-disable-next-line
+    }, [isAuthenticated]);
+    if (loading)
+        return (
+            <div className='row' style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem' }}>
+                <Spinner color={'purple'} size={20} />
+            </div>
+        );
     return (
         <div className={`row mx-2 fade`}>
             <div className='col s12 center container '>
@@ -30,4 +44,8 @@ const Home = () => {
     );
 };
 
-export default Home;
+const mapStateToProps = state => ({
+    auth: state.auth
+});
+
+export default connect(mapStateToProps, null)(Home);

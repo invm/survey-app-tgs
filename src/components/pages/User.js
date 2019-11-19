@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
 
-const User = ({ location, history }) => {
-    if (!location.action) history.push('/dashboard');
-    let action;
+const User = ({ location, history, auth }) => {
+    const { isAuthenticated, admin } = auth;
+    let { action } = location || null;
+    useEffect(() => {
+        if (!action || !isAuthenticated || admin) history.push('/dashboard');
+        //eslint-disable-next-line
+    }, [isAuthenticated, admin]);
     switch (location.action) {
         case 'view-completed':
             action = <div>{location.action}</div>;
@@ -20,4 +25,7 @@ const User = ({ location, history }) => {
     return <div className='card fade center'>{action}</div>;
 };
 
-export default User;
+const mapStateToProps = state => ({
+    auth: state.auth
+});
+export default connect(mapStateToProps, null)(User);
