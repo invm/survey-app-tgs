@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import Spinner from '../layout/Spinner';
+import { castVote } from '../../actions/surveyActions';
+import { setError } from '../../actions/errorActions';
 
 const Survey = props => {
     // @todo breaks on refresh!
-    const { surveys, surveyLoading } = props.survey;
+    const { surveys, surveyLoading, error } = props.survey;
+    const { user } = props.auth;
+
+    const [answers, setAnswers] = useState({});
     let survey = null;
     // If pressed on from survey list, than the survey is passed down to this component
     if (props.location.survey) survey = props.location.survey;
@@ -12,6 +17,23 @@ const Survey = props => {
         // If not passed from survey list,try and fetch from db the survey
         survey = surveys.find(survey => survey.id === props.match.params.id);
     }
+
+    useEffect(() => {
+        if (error) props.setError(error);
+    }, [error]);
+
+    const handleVote = () => {
+        props.castVote(survey.id, answers);
+    };
+
+    const handleAnswers = e => {
+        const q = e.target.id.substring(1, 2);
+        const a = Number(e.target.id.slice(3));
+        setAnswers({
+            ...answers,
+            [q]: a
+        });
+    };
 
     // If no such survey, probably a mistake, show survey not found
     if (surveyLoading)
@@ -21,7 +43,8 @@ const Survey = props => {
             </div>
         );
     else if (survey) {
-        const { category, name, questions, voted } = survey;
+        const { category, name, questions, id } = survey;
+        const voted = user.completedSurveys.includes(id);
         return (
             <div className='card fade'>
                 <div className='card-content'>
@@ -40,7 +63,7 @@ const Survey = props => {
                                         {question.question}
                                     </h6>
                                     <div>
-                                        {question.answers.map(answer =>
+                                        {question.answers.map((answer, index) =>
                                             voted ? (
                                                 <p key={answer.id}>
                                                     {answer.answer} -> {answer.count}
@@ -48,7 +71,7 @@ const Survey = props => {
                                                 </p>
                                             ) : (
                                                 <label key={answer.id} style={{ color: 'black', marginRight: '1.5rem' }}>
-                                                    <input name={`${question.id}`} type='radio' />
+                                                    <input onChange={handleAnswers} name={`q${i}`} type='radio' id={`q${i}a${index}`} />
                                                     <span>{answer.answer}</span>
                                                 </label>
                                             )
@@ -59,7 +82,7 @@ const Survey = props => {
                         </ul>
                     </div>
                     <div className='card-action'>
-                        <button className='hoverable mx-2 waves-effect waves-light btn-large purple darken-4'>
+                        <button onClick={handleVote} className='hoverable mx-2 waves-effect waves-light btn-large purple darken-4'>
                             Save Vote! <i className='material-icons left'>how_to_vote</i>
                         </button>
                     </div>
@@ -75,7 +98,8 @@ const Survey = props => {
 };
 
 const mapStateToProps = state => ({
-    survey: state.survey
+    survey: state.survey,
+    auth: state.auth
 });
 
-export default connect(mapStateToProps, null)(Survey);
+export default connect(mapStateToProps, { castVote, setError })(Survey);

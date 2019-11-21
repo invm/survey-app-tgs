@@ -4,11 +4,16 @@ import { connect } from 'react-redux';
 
 const SurveySummary = props => {
     const { category, id, name } = props.survey;
-    const { isAuthenticated, admin } = props.auth;
+    const {
+        isAuthenticated,
+        admin,
+        user: { completedSurveys }
+    } = props.auth;
+
     return (
         <div className='card hoverable ' style={{ padding: '0.25rem' }}>
             {' '}
-            <h5>{category}</h5>
+            <h5>Category: {category}</h5>
             <div style={flexBetweenCenter}>
                 <span>{name} </span>
                 <Link
@@ -17,7 +22,7 @@ const SurveySummary = props => {
                         survey: props.survey
                     }}
                 >
-                    {isAuthenticated && !admin ? (
+                    {isAuthenticated && !admin && !completedSurveys.includes(id) ? (
                         <button className='hoverable mx-2 waves-effect waves-light btn-large purple darken-4'>
                             Vote Now! <i className='material-icons left'>thumbs_up_down</i>
                         </button>

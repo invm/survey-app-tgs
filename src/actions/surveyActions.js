@@ -21,10 +21,54 @@ import {
     DELETE_CATEGORY_FAIL,
     REDEEM_COUPON_ATTEMPT,
     REDEEM_COUPON_SUCCESS,
-    REDEEM_COUPON_FAIL
+    REDEEM_COUPON_FAIL,
+    CAST_VOTE_ATTEMPT,
+    CAST_VOTE_SUCCESS,
+    CAST_VOTE_FAIL
 } from './types';
 
-import { db } from '../config/fb';
+import 'firebase/firestore';
+
+import { db, auth, firebase } from '../config/fb';
+
+export const castVote = (surveyId, surveyAnswers) => dispatch => {
+    dispatch({ type: CAST_VOTE_ATTEMPT });
+    let user = auth.currentUser;
+    let surveyRef = db.collection('surveys').doc(surveyId);
+    surveyRef
+        .get()
+        .then(survey => {
+            if (survey.exists) {
+                let voted = survey.data().voted;
+                if (!voted.includes(user.uid)) {
+                    surveyRef
+                        .update({
+                            voted: firebase.firestore.FieldValue.arrayUnion(user.uid)
+                        })
+                        .then(() => {
+                            // Now update users db and add answers to his collection
+                            db.collection('users')
+                                .doc(user.uid)
+                                .update({
+                                    completedSurveys: firebase.firestore.FieldValue.arrayUnion(surveyId)
+                                });
+                        })
+                        .then(() => {
+                            //update choices collection
+                            db.collection('users')
+                                .doc(user.uid)
+                                .collection('choices')
+                                .doc(surveyId)
+                                .set(surveyAnswers)
+                                //@todo return results and show in survey component
+                                .then(() => dispatch({ type: CAST_VOTE_SUCCESS, payload: surveyId }))
+                                .catch(error => dispatch({ type: CAST_VOTE_FAIL, payload: error.message }));
+                        });
+                } else dispatch({ type: CAST_VOTE_FAIL, payload: 'User has already voted' });
+            } else dispatch({ type: CAST_VOTE_FAIL, payload: 'Survey does not exists' });
+        })
+        .catch(error => dispatch({ type: CAST_VOTE_FAIL, payload: error.message }));
+};
 
 export const fetchSurveys = () => dispatch => {
     dispatch({ type: FETCH_SURVEYS_ATTEMPT });

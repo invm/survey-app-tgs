@@ -18,6 +18,9 @@ import {
     DELETE_CATEGORY_ATTEMPT,
     DELETE_CATEGORY_SUCCESS,
     DELETE_CATEGORY_FAIL,
+    CAST_VOTE_ATTEMPT,
+    CAST_VOTE_SUCCESS,
+    CAST_VOTE_FAIL,
     CLEAR_ERROR
 } from '../actions/types';
 
@@ -25,7 +28,7 @@ const initialState = {
     categories: [],
     error: null,
     surveys: [],
-    surveyLoading: true
+    surveyLoading: false
 };
 
 export default function(state = initialState, action) {
@@ -36,6 +39,7 @@ export default function(state = initialState, action) {
         case DELETE_SURVEY_ATTEMPT:
         case DELETE_CATEGORY_ATTEMPT:
         case ADD_CATEGORY_ATTEMPT:
+        case CAST_VOTE_ATTEMPT:
             return {
                 ...state,
                 surveyLoading: true
@@ -46,6 +50,7 @@ export default function(state = initialState, action) {
         case CREATE_SURVEY_FAIL:
         case EDIT_SURVEY_FAIL:
         case DELETE_SURVEY_FAIL:
+        case CAST_VOTE_FAIL:
             return {
                 ...state,
                 error: action.payload,
@@ -95,6 +100,11 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 categories: state.categories.filter(cat => cat.id !== action.payload),
+                surveyLoading: false
+            };
+        case CAST_VOTE_SUCCESS:
+            return {
+                ...state,
                 surveyLoading: false
             };
 

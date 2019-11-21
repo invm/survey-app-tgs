@@ -8,6 +8,7 @@ import Spinner from '../layout/Spinner';
 import { Redirect } from 'react-router-dom';
 
 const MakeSurvey = props => {
+    // @todo REFACTOR!
     const { error, surveyLoading, surveys } = props.survey;
     const { isAuthenticated, role, loading } = props.auth;
     const [survey, setSurvey] = useState({

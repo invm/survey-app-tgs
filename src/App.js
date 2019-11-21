@@ -14,14 +14,41 @@ import Admin from './components/pages/Admin';
 import User from './components/pages/User';
 import ErrorCard from './components/layout/ErrorCard';
 
+import { auth, db } from './config/fb';
+
 import { fetchCategories, fetchSurveys } from './actions/surveyActions';
 
 const App = props => {
+    const { surveys, categories, surveyLoading } = props.survey;
+    const { user } = props.auth;
+    // used to stop listening for updates
+    let unsubscribe = () => {};
     useEffect(() => {
-        props.fetchSurveys();
-        props.fetchCategories();
+        // Once upon mounting, fetch for all data needed
+        if (!surveyLoading && surveys.length === 0) props.fetchSurveys();
+        if (!surveyLoading && categories.length === 0) props.fetchCategories();
+        if (auth.currentUser !== null) {
+            // Realtime monitor that depends on user's completed surveys array
+            //eslint-disable-next-line
+            unsubscribe = db
+                .collection('users')
+                .doc(auth.currentUser.uid)
+                .onSnapshot(
+                    () => {},
+                    error => {}
+                );
+            db.collection('users')
+                .doc(auth.currentUser.uid)
+                .onSnapshot(
+                    doc => {},
+                    error => {}
+                );
+        } else {
+            // unsubscribe from realtime updates from specific user
+            unsubscribe();
+        }
         //eslint-disable-next-line
-    }, []);
+    }, [user.completedSurveys]);
     return (
         <Router>
             <Navbar />
@@ -44,4 +71,9 @@ const App = props => {
     );
 };
 
-export default connect(null, { fetchSurveys, fetchCategories })(App);
+const mapStateToProps = state => ({
+    survey: state.survey,
+    auth: state.auth
+});
+
+export default connect(mapStateToProps, { fetchSurveys, fetchCategories })(App);

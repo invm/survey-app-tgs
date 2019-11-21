@@ -1,4 +1,4 @@
-import { REGISTER_SUCCESS, REGISTER_FAIL, LOGOUT, REGISTER_ATTEMPT, LOGIN_ATTEMPT, LOGIN_SUCCESS, LOGIN_FAIL, EDIT_USER_ATTEMPT, EDIT_USER_SUCCESS, EDIT_USER_FAIL } from './types';
+import { REGISTER_SUCCESS, REGISTER_FAIL, LOGOUT, REGISTER_ATTEMPT, LOGIN_ATTEMPT, LOGIN_SUCCESS, LOGIN_FAIL, EDIT_USER_INFO_ATTEMPT, EDIT_USER_INFO_SUCCESS, EDIT_USER_INFO_FAIL } from './types';
 
 import { auth, db } from '../config/fb';
 
@@ -73,7 +73,7 @@ export const logout = () => dispatch => {
 };
 
 export const updateUser = ({ fname, lname }) => dispatch => {
-    dispatch({ type: EDIT_USER_ATTEMPT });
+    dispatch({ type: EDIT_USER_INFO_ATTEMPT });
     var user = auth.currentUser;
     user.updateProfile({
         displayName: `${fname} ${lname}`
@@ -85,7 +85,7 @@ export const updateUser = ({ fname, lname }) => dispatch => {
                     fname: fname,
                     lname: lname
                 })
-                .then(() => dispatch({ type: EDIT_USER_SUCCESS, payload: { fname, lname } }));
+                .then(() => dispatch({ type: EDIT_USER_INFO_SUCCESS, payload: { fname, lname } }));
         })
-        .catch(error => dispatch({ type: EDIT_USER_FAIL, payload: error.message }));
+        .catch(error => dispatch({ type: EDIT_USER_INFO_FAIL, payload: error.message }));
 };

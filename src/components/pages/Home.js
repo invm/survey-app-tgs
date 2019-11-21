@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import Spinner from '../layout/Spinner';
 
 const Home = props => {
+    // @todo Breaks upon logout
     const { isAuthenticated, loading } = props.auth;
     useEffect(() => {
         if (isAuthenticated) props.history.push('/dashboard');

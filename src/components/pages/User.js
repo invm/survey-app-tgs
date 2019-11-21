@@ -5,9 +5,11 @@ import { redeemCoupon } from '../../actions/surveyActions';
 import { updateUser } from '../../actions/authActions';
 import { setError } from '../../actions/errorActions';
 import Spinner from '../layout/Spinner';
+import SurveySummary from '../surveys/SurveySummary';
 
 const User = props => {
     const { isAuthenticated, admin, user, loading, error } = props.auth;
+    const { surveys } = props.survey;
     const [userInfo, setUserInfo] = useState(user);
     let { action } = props.location || 0;
 
@@ -39,13 +41,30 @@ const User = props => {
 
     switch (props.location.action) {
         case 'view-completed':
-            action = <div>{props.location.action}</div>;
+            action = (
+                <div className='row'>
+                    <div className='col s12'>
+                        <h4>Completed Surveys</h4>
+                        {surveys
+                            .filter(survey => user.completedSurveys.includes(survey.id))
+                            .map(survey => (
+                                <SurveySummary survey={survey} key={survey.id} />
+                            ))}
+                        <Link to='/surveyslist'>
+                            {/* @todo when data is new, the component breaks */}
+                            <button style={{ margin: '2rem 0' }} className='mx-2 waves-effect waves-light btn-large purple darken-4'>
+                                Complete surveys to earn coupons <i className='material-icons left'>how_to_vote</i>
+                            </button>
+                        </Link>
+                    </div>
+                </div>
+            );
             break;
         case 'view-coupons':
             action = (
                 <div className='row'>
                     <div className='col s8 offset-s2'>
-                        <h6>User's coupons</h6>
+                        <h4>User's coupons</h4>
                         {user.coupons.length ? (
                             <>
                                 {user.coupons.map(coupon => (
@@ -84,7 +103,7 @@ const User = props => {
             action = (
                 <div className='row'>
                     <div className='col s8 offset-s2'>
-                        <h6>Change User Info</h6>
+                        <h4>Change User Info</h4>
                         <form className='col s6 offset-s3' id='add-admin' onSubmit={() => {}}>
                             <div className='row'>
                                 <div className=' input-field col s12'>
@@ -114,6 +133,7 @@ const User = props => {
 };
 
 const mapStateToProps = state => ({
-    auth: state.auth
+    auth: state.auth,
+    survey: state.survey
 });
 export default connect(mapStateToProps, { redeemCoupon, updateUser, setError })(User);
