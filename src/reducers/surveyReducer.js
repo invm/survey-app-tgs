@@ -105,7 +105,14 @@ export default function(state = initialState, action) {
         case CAST_VOTE_SUCCESS:
             return {
                 ...state,
-                surveyLoading: false
+                surveyLoading: false,
+                surveys: state.surveys.map(survey => {
+                    if (survey.id === action.payload.surveyId) {
+                        survey.voted.push(action.payload.user);
+                        return action.payload.survey;
+                    }
+                    return survey;
+                })
             };
 
         case CLEAR_ERROR:

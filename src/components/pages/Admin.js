@@ -32,7 +32,6 @@ const Admin = props => {
             setNewCat('');
         } else if (survey.categories.includes(newCat)) {
             setNewCat('');
-            // @todo dispatch an error
         }
     };
 

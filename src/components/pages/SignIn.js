@@ -37,7 +37,7 @@ const SignIn = props => {
     };
     return (
         <div className='row fade' style={{ marginTop: '1rem' }}>
-            <form className='col s8 offset-s2'>
+            <form className='col s12  m8 offset-m2'>
                 <div className='row'>
                     <div className='input-field col s12'>
                         <input required value={user.email} onChange={handleInput} id='email' type='email' className='validate' />

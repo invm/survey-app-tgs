@@ -51,7 +51,6 @@ const User = props => {
                                 <SurveySummary survey={survey} key={survey.id} />
                             ))}
                         <Link to='/surveyslist'>
-                            {/* @todo when data is new, the component breaks */}
                             <button style={{ margin: '2rem 0' }} className='mx-2 waves-effect waves-light btn-large purple darken-4'>
                                 Complete surveys to earn coupons <i className='material-icons left'>how_to_vote</i>
                             </button>

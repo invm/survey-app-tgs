@@ -5,9 +5,8 @@ import { castVote } from '../../actions/surveyActions';
 import { setError } from '../../actions/errorActions';
 
 const Survey = props => {
-    // @todo breaks on refresh!
     const { surveys, surveyLoading, error } = props.survey;
-    const { user } = props.auth;
+    const { user, isAuthenticated } = props.auth;
 
     const [answers, setAnswers] = useState({});
     let survey = null;
@@ -20,10 +19,17 @@ const Survey = props => {
 
     useEffect(() => {
         if (error) props.setError(error);
+
+        //eslint-disable-next-line
     }, [error]);
 
     const handleVote = () => {
-        props.castVote(survey.id, answers);
+        // check than all answers are checked before attempting to cast vote
+        if (Object.keys(answers).length < survey.questions.length) props.setError('Please fill all answers');
+        else {
+            props.castVote(survey.id, answers);
+            setAnswers({});
+        }
     };
 
     const handleAnswers = e => {
@@ -43,6 +49,7 @@ const Survey = props => {
             </div>
         );
     else if (survey) {
+        // @todo upon cast vote, redux gets updated but the count in this component does not
         const { category, name, questions, id } = survey;
         const voted = user.completedSurveys.includes(id);
         return (
@@ -64,7 +71,7 @@ const Survey = props => {
                                     </h6>
                                     <div>
                                         {question.answers.map((answer, index) =>
-                                            voted ? (
+                                            voted || !isAuthenticated ? (
                                                 <p key={answer.id}>
                                                     {answer.answer} -> {answer.count}
                                                     {' votes.'}
@@ -81,11 +88,13 @@ const Survey = props => {
                             ))}
                         </ul>
                     </div>
-                    <div className='card-action'>
-                        <button onClick={handleVote} className='hoverable mx-2 waves-effect waves-light btn-large purple darken-4'>
-                            Save Vote! <i className='material-icons left'>how_to_vote</i>
-                        </button>
-                    </div>
+                    {isAuthenticated && !voted && (
+                        <div className='card-action'>
+                            <button onClick={handleVote} className='hoverable mx-2 waves-effect waves-light btn-large purple darken-4'>
+                                Save Vote! <i className='material-icons left'>how_to_vote</i>
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         );

@@ -25,7 +25,7 @@ const Navbar = props => {
                 </Link>
             </li>
             <li>
-                <Link onClick={onLogoutClick} to='/'>
+                <Link onClick={onLogoutClick} to='#'>
                     <i style={{ margin: '0' }} className='material-icons left'>
                         exit_to_app
                     </i>

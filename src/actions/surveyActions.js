@@ -28,7 +28,7 @@ import {
 } from './types';
 
 import 'firebase/firestore';
-
+import uuid from 'uuid';
 import { db, auth, firebase } from '../config/fb';
 
 export const castVote = (surveyId, surveyAnswers) => dispatch => {
@@ -41,16 +41,23 @@ export const castVote = (surveyId, surveyAnswers) => dispatch => {
             if (survey.exists) {
                 let voted = survey.data().voted;
                 if (!voted.includes(user.uid)) {
+                    // If user eligible for vote than generate a coupon code
+                    let couponCode = uuid.v4();
+                    // In order to change multiple values its better to take the data and change it, than update the doc with the data.
+                    let data = survey.data();
+                    data['questions'].forEach((question, qIndex) => {
+                        question['answers'][surveyAnswers[qIndex]].count++;
+                    });
+                    data['voted'] = [...data.voted, user.uid];
                     surveyRef
-                        .update({
-                            voted: firebase.firestore.FieldValue.arrayUnion(user.uid)
-                        })
+                        .update(data)
                         .then(() => {
                             // Now update users db and add answers to his collection
                             db.collection('users')
                                 .doc(user.uid)
                                 .update({
-                                    completedSurveys: firebase.firestore.FieldValue.arrayUnion(surveyId)
+                                    completedSurveys: firebase.firestore.FieldValue.arrayUnion(surveyId),
+                                    coupons: firebase.firestore.FieldValue.arrayUnion({ id: couponCode, redeemed: false })
                                 });
                         })
                         .then(() => {
@@ -59,9 +66,30 @@ export const castVote = (surveyId, surveyAnswers) => dispatch => {
                                 .doc(user.uid)
                                 .collection('choices')
                                 .doc(surveyId)
-                                .set(surveyAnswers)
-                                //@todo return results and show in survey component
-                                .then(() => dispatch({ type: CAST_VOTE_SUCCESS, payload: surveyId }))
+                                .set(surveyAnswers);
+                        })
+                        .then(() => {
+                            // return results to show in survey component
+                            db.collection('users')
+                                .doc(user.uid)
+                                .collection('choices')
+                                .doc(surveyId)
+                                .get()
+                                .then(doc =>
+                                    dispatch({
+                                        type: CAST_VOTE_SUCCESS,
+                                        payload: {
+                                            surveyId,
+                                            survey: data,
+                                            user: user.uid,
+                                            choices: { id: doc.id, questions: doc.data() },
+                                            coupon: {
+                                                id: couponCode,
+                                                redeemed: false
+                                            }
+                                        }
+                                    })
+                                )
                                 .catch(error => dispatch({ type: CAST_VOTE_FAIL, payload: error.message }));
                         });
                 } else dispatch({ type: CAST_VOTE_FAIL, payload: 'User has already voted' });

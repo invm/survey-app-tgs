@@ -64,7 +64,9 @@ export default function(state = initialState, action) {
                 ...state,
                 user: {
                     ...state.user,
-                    completedSurveys: [...state.user.completedSurveys, action.payload]
+                    completedSurveys: [...state.user.completedSurveys, action.payload.surveyId],
+                    choices: [...state.user.choices, action.payload.choices],
+                    coupons: [...state.user.coupons, action.payload.coupon]
                 }
             };
         case REGISTER_SUCCESS:
