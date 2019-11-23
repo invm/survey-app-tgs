@@ -38,11 +38,11 @@ const SignUp = props => {
             <form className='col s12 m8 offset-m2'>
                 <div className='row'>
                     <div className='input-field col s6'>
-                        <input onChange={handleInput} value={user.fname} id='fname' type='text' className='validate' />
+                        <input required onChange={handleInput} value={user.fname} id='fname' type='text' className='validate' />
                         <label htmlFor='fname'>First Name</label>
                     </div>
                     <div className='input-field col s6'>
-                        <input onChange={handleInput} value={user.lname} id='lname' type='text' className='validate' />
+                        <input required onChange={handleInput} value={user.lname} id='lname' type='text' className='validate' />
                         <label htmlFor='lname'>Last Name</label>
                     </div>
                 </div>

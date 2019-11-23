@@ -6,7 +6,7 @@ const ErrorCard = props => {
         <>
             {props.message ? (
                 <div className='row center error-message' style={{ marginBottom: '0' }}>
-                    <div className='col s6 offset-s3 '>
+                    <div className='col s12 m8 offset-m2 '>
                         <div className='card  pink darken-2'>
                             <div className='card-content white-text' style={{ padding: '6px' }}>
                                 <strong className='card-title' style={{ margin: '0' }}>

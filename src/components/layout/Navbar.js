@@ -51,7 +51,7 @@ const Navbar = props => {
                     Survey App
                 </Link>
                 <ul id='nav-mobile' className='right '>
-                    <li className='hide-on-small-only'>
+                    <li>
                         <Link to='/surveyslist'>Surveys</Link>
                     </li>
                     {loading ? <Spinner button={true} size={1} /> : <>{isAuthenticated ? authLinks : guestLinks}</>}
