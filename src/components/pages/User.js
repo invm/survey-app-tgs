@@ -62,7 +62,7 @@ const User = props => {
         case 'view-coupons':
             action = (
                 <div className='row'>
-                    <div className='col s8 offset-s2'>
+                    <div className='col s12 m8 offset-m2'>
                         <h4>User's coupons</h4>
                         {user.coupons.length ? (
                             <>
@@ -71,17 +71,17 @@ const User = props => {
                                         {' '}
                                         {coupon.id}{' '}
                                         {coupon.redeemed ? (
-                                            'Redeemed Coupon'
+                                            <strong>Redeemed Coupon</strong>
                                         ) : (
                                             <button
+                                                style={{ margin: '2rem 0' }}
                                                 onClick={e => {
                                                     e.preventDefault();
                                                     handleRedeem(coupon.id);
                                                 }}
-                                                style={{ margin: '2rem 0' }}
                                                 className='mx-2 waves-effect waves-light btn-large purple darken-4'
                                             >
-                                                Redeem
+                                                {loading && <Spinner size={1} button={true} />} Redeem
                                             </button>
                                         )}{' '}
                                     </p>
@@ -101,9 +101,9 @@ const User = props => {
         case 'edit-user':
             action = (
                 <div className='row'>
-                    <div className='col s8 offset-s2'>
-                        <h4>Change User Info</h4>
-                        <form className='col s6 offset-s3' id='add-admin' onSubmit={() => {}}>
+                    <div className='col s12 m8  offset-m2'>
+                        <h4>Update User Info</h4>
+                        <form className='col s12 m8 offset-m2' onSubmit={() => {}}>
                             <div className='row'>
                                 <div className=' input-field col s12'>
                                     <input required value={userInfo.fname} onChange={handleInput} id='fname' type='text' className='validate' />
@@ -116,8 +116,8 @@ const User = props => {
                                     <label htmlFor='lname'>Last Name</label>
                                 </div>
                             </div>
-                            <button style={{ margin: '2rem 0' }} onClick={handleSubmit} className='mx-2 waves-effect waves-light btn-large purple darken-4'>
-                                {loading ? <Spinner size={1} button={true} /> : <i className='material-icons left'>perm_identity</i>} Update User Info
+                            <button style={{ margin: '1rem 0', width: '100%' }} onClick={handleSubmit} className='mx-2 waves-effect waves-light btn-large purple darken-4'>
+                                {loading ? <Spinner size={1} button={true} /> : <i className='material-icons left'>perm_identity</i>} Update Info
                             </button>
                         </form>
                     </div>

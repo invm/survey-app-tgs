@@ -1,4 +1,4 @@
-import { REGISTER_SUCCESS, REGISTER_FAIL, LOGOUT, REGISTER_ATTEMPT, LOGIN_ATTEMPT, LOGIN_SUCCESS, LOGIN_FAIL, EDIT_USER_INFO_ATTEMPT, EDIT_USER_INFO_SUCCESS, EDIT_USER_INFO_FAIL } from './types';
+import { REGISTER_SUCCESS, REGISTER_FAIL, LOGOUT, REGISTER_ATTEMPT, LOGIN_ATTEMPT, LOGIN_SUCCESS, LOGIN_FAIL, EDIT_USER_INFO_ATTEMPT, EDIT_USER_INFO_SUCCESS, EDIT_USER_INFO_FAIL, FETCH_USERS_ATTEMPT, FETCH_USERS_FAIL, FETCH_USERS_SUCCESS } from './types';
 
 import { auth, db } from '../config/fb';
 
@@ -87,5 +87,33 @@ export const updateUser = ({ fname, lname }) => dispatch => {
                 })
                 .then(() => dispatch({ type: EDIT_USER_INFO_SUCCESS, payload: { fname, lname } }));
         })
+        .catch(error => dispatch({ type: EDIT_USER_INFO_FAIL, payload: error.message }));
+};
+
+export const fetchUsers = () => dispatch => {
+    dispatch({ type: FETCH_USERS_ATTEMPT });
+    let data = [];
+    db.collection('users')
+        .get()
+        .then(snapshot =>
+            snapshot.forEach(doc => {
+                let user = { id: doc.id, data: doc.data() };
+                // Just to exclude the default admin
+                if (user.data.fname !== 'Admin') data.push(user);
+            })
+        )
+        .then(() => dispatch({ type: FETCH_USERS_SUCCESS, payload: data }))
+        .catch(error => dispatch({ type: FETCH_USERS_FAIL, payload: error.message }));
+};
+
+export const updateUserByAdmin = ({ id, fname, lname }) => dispatch => {
+    dispatch({ type: EDIT_USER_INFO_ATTEMPT });
+    db.collection('users')
+        .doc(id)
+        .update({
+            fname: fname,
+            lname: lname
+        })
+        .then(() => dispatch({ type: EDIT_USER_INFO_SUCCESS, payload: { fname, lname } }))
         .catch(error => dispatch({ type: EDIT_USER_INFO_FAIL, payload: error.message }));
 };

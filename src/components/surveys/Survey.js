@@ -6,8 +6,7 @@ import { setError } from '../../actions/errorActions';
 
 const Survey = props => {
     const { surveys, surveyLoading, error } = props.survey;
-    const { user, isAuthenticated } = props.auth;
-
+    const { user, isAuthenticated, admin } = props.auth;
     const [answers, setAnswers] = useState({});
     let survey = null;
     // If pressed on from survey list, than the survey is passed down to this component
@@ -19,7 +18,6 @@ const Survey = props => {
 
     useEffect(() => {
         if (error) props.setError(error);
-
         //eslint-disable-next-line
     }, [error]);
 
@@ -49,9 +47,10 @@ const Survey = props => {
             </div>
         );
     else if (survey) {
-        // @todo upon cast vote, redux gets updated but the count in this component does not
+        // if such survey exists, fetch again from redux for most up-to-date data
+        survey = surveys.find(survey => survey.id === props.match.params.id);
         const { category, name, questions, id } = survey;
-        const voted = user.completedSurveys.includes(id);
+        let voted = admin ? true : user.completedSurveys.includes(id);
         return (
             <div className='card fade'>
                 <div className='card-content'>

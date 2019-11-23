@@ -221,16 +221,31 @@ export const deleteCategory = id => dispatch => {
 
 export const redeemCoupon = (userId, id) => dispatch => {
     dispatch({ type: REDEEM_COUPON_ATTEMPT });
-    db.collection('users')
-        .doc(userId)
-        .update({
-            coupons: db.FieldValue.arrayRemove({ id: id })
+    let data = {};
+    let userRef = db.collection('users').doc(userId);
+    userRef
+        .get()
+        .then(user => (data = user.data()))
+        .then(() => {
+            let coupons = data['coupons'].map(coupon => {
+                if (coupon.id === id) {
+                    coupon.redeemed = true;
+                    return coupon;
+                }
+                return coupon;
+            });
+            data['coupons'] = coupons;
         })
         .then(() => {
-            return dispatch({
-                type: REDEEM_COUPON_SUCCESS,
-                payload: id
-            });
+            db.collection('users')
+                .doc(userId)
+                .update(data)
+                .then(() => {
+                    return dispatch({
+                        type: REDEEM_COUPON_SUCCESS,
+                        payload: id
+                    });
+                });
         })
         .catch(error =>
             dispatch({

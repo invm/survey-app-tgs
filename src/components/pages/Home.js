@@ -9,7 +9,7 @@ const Home = props => {
     useEffect(() => {
         if (isAuthenticated) props.history.push('/dashboard');
         // eslint-disable-next-line
-    }, []);
+    }, [isAuthenticated]);
     if (loading)
         return (
             <div className='row' style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem' }}>

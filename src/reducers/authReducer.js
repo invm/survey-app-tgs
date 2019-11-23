@@ -1,4 +1,24 @@
-import { LOGOUT, REGISTER_SUCCESS, REGISTER_ATTEMPT, REGISTER_FAIL, CLEAR_ERROR, LOGIN_ATTEMPT, LOGIN_FAIL, LOGIN_SUCCESS, USER_STATE_CHANGED, EDIT_USER_INFO_SUCCESS, EDIT_USER_INFO_FAIL, EDIT_USER_INFO_ATTEMPT, CAST_VOTE_SUCCESS } from '../actions/types';
+import {
+    LOGOUT,
+    REGISTER_SUCCESS,
+    REGISTER_ATTEMPT,
+    REGISTER_FAIL,
+    CLEAR_ERROR,
+    LOGIN_ATTEMPT,
+    LOGIN_FAIL,
+    LOGIN_SUCCESS,
+    USER_STATE_CHANGED,
+    EDIT_USER_INFO_SUCCESS,
+    EDIT_USER_INFO_FAIL,
+    EDIT_USER_INFO_ATTEMPT,
+    CAST_VOTE_SUCCESS,
+    REDEEM_COUPON_ATTEMPT,
+    REDEEM_COUPON_FAIL,
+    REDEEM_COUPON_SUCCESS,
+    FETCH_USERS_ATTEMPT,
+    FETCH_USERS_FAIL,
+    FETCH_USERS_SUCCESS
+} from '../actions/types';
 
 const initialState = {
     isAuthenticated: null,
@@ -8,7 +28,7 @@ const initialState = {
         coupons: [],
         completedSurveys: []
     },
-    usersForAdmin: [],
+    usersForAdmin: null,
     loading: false
 };
 export default function(state = initialState, action) {
@@ -36,6 +56,8 @@ export default function(state = initialState, action) {
         case REGISTER_ATTEMPT:
         case LOGIN_ATTEMPT:
         case EDIT_USER_INFO_ATTEMPT:
+        case REDEEM_COUPON_ATTEMPT:
+        case FETCH_USERS_ATTEMPT:
             return {
                 ...state,
                 loading: true
@@ -43,6 +65,8 @@ export default function(state = initialState, action) {
         case REGISTER_FAIL:
         case LOGIN_FAIL:
         case EDIT_USER_INFO_FAIL:
+        case REDEEM_COUPON_FAIL:
+        case FETCH_USERS_FAIL:
         case LOGOUT:
             return {
                 ...state,
@@ -62,6 +86,7 @@ export default function(state = initialState, action) {
         case CAST_VOTE_SUCCESS:
             return {
                 ...state,
+                loading: false,
                 user: {
                     ...state.user,
                     completedSurveys: [...state.user.completedSurveys, action.payload.surveyId],
@@ -69,8 +94,33 @@ export default function(state = initialState, action) {
                     coupons: [...state.user.coupons, action.payload.coupon]
                 }
             };
+        case REDEEM_COUPON_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                user: {
+                    ...state.user,
+                    coupons: state.user.coupons.map(coupon => {
+                        if (coupon.id === action.payload) {
+                            coupon['redeemed'] = true;
+                            return coupon;
+                        }
+                        return coupon;
+                    })
+                }
+            };
+        case FETCH_USERS_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                usersForAdmin: action.payload
+            };
         case REGISTER_SUCCESS:
         case LOGIN_SUCCESS:
+            return {
+                ...state,
+                loading: false
+            };
         default:
             return state;
     }

@@ -5,24 +5,37 @@ import { Link } from 'react-router-dom';
 import { addCategory, deleteSurvey, deleteCategory } from '../../actions/surveyActions';
 import { setError } from '../../actions/errorActions';
 import { functions } from '../../config/fb';
+import { updateUserByAdmin } from '../../actions/authActions';
 
 const Admin = props => {
     const { location, history, survey } = props;
     let { action } = location;
-    const { isAuthenticated, admin } = props.auth;
+    const { isAuthenticated, admin, usersForAdmin, loading } = props.auth;
     const surveyLoading = survey.surveyLoading;
     const error = survey.error;
     const [newCat, setNewCat] = useState('');
     const [adminEmail, setAdminEmail] = useState('');
+    const [userInfo, setUserInfo] = useState({
+        id: '',
+        lname: '',
+        fname: ''
+    });
     if (!isAuthenticated || !admin) history.push('/');
 
     // If not action have been passed via link, push back to dashboard
     if (!location.action) history.push('/dashboard');
 
     useEffect(() => {
+        console.log('ran');
+        (function() {
+            var list = document.getElementsByTagName('label');
+            for (let item of list) {
+                item.className = 'active';
+            }
+        })();
         if (error) props.setError(error);
         //eslint-disable-next-line
-    }, [error]);
+    }, [props]);
 
     const handleNewCat = e => {
         e.preventDefault();
@@ -47,6 +60,26 @@ const Admin = props => {
             .then(result => props.setError(result.data.message))
             .catch(error => {
                 props.setError('Something went very wrong...');
+            });
+    };
+
+    const handleInput = e => setUserInfo({ ...userInfo, [e.target.id]: e.target.value });
+
+    const updateUser = e => {
+        e.preventDefault();
+        if (userInfo.fname !== '' && userInfo.lname !== '') props.updateUserByAdmin({ id: userInfo.id, fname: userInfo.fname, lname: userInfo.lname });
+        else props.setError('Do not leave blank fields please');
+    };
+
+    const handleSelect = e => {
+        let el = document.getElementById('users');
+        let user = usersForAdmin.find(user => user.id === el.options[el.selectedIndex].id);
+        if (user) setUserInfo({ id: user.id, fname: user.data.fname, lname: user.data.lname });
+        else
+            setUserInfo({
+                id: '',
+                fname: '',
+                lname: ''
             });
     };
 
@@ -90,10 +123,52 @@ const Admin = props => {
             );
             break;
         case 'edit-user':
-            action = <div>{location.action}</div>;
+            action = (
+                <div className='row'>
+                    <div className='col s12 m8  offset-m2'>
+                        <h4>Update User Info</h4>
+                        <select onChange={handleSelect} className='browser-default col' id='users'>
+                            <option value={'Choose user for update..'}>Choose user for update..</option>
+                            {usersForAdmin.map(user => (
+                                <option id={user.id} key={user.id} value={`${user.data.fname} ${user.data.lname}`}>{`${user.data.fname} ${user.data.lname}`}</option>
+                            ))}
+                        </select>
+                        <form className='col s12 m8 offset-m2' id='edit-user' onSubmit={() => {}}>
+                            <div className='row'>
+                                <div className=' input-field col s12'>
+                                    <input required value={userInfo.fname} onChange={handleInput} id='fname' type='text' className='validate' />
+                                    <label htmlFor='fname'>First Name</label>
+                                </div>
+                            </div>
+                            <div className='row'>
+                                <div className=' input-field col s12'>
+                                    <input required value={userInfo.lname} onChange={handleInput} id='lname' type='text' className='validate' />
+                                    <label htmlFor='lname'>Last Name</label>
+                                </div>
+                            </div>
+                            <button style={{ margin: '1rem 0', width: '100%' }} onClick={updateUser} className='mx-2 waves-effect waves-light btn-large purple darken-4'>
+                                {loading ? <Spinner size={1} button={true} /> : <i className='material-icons left'>perm_identity</i>} Update Info
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            );
             break;
         case 'view-users':
-            action = <div>{location.action}</div>;
+            action = (
+                <div className='row'>
+                    {usersForAdmin.map(user => (
+                        <span key={user.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className='col s12 m6 offset-m3'>
+                            <h5>
+                                {user.data.fname} ,{user.data.lname}
+                            </h5>
+                            <Link to={{ pathname: '/admin', action: 'edit-user' }}>
+                                <button className='mx-1 waves-effect waves-light btn-small purple darken-4'>Edit</button>
+                            </Link>
+                        </span>
+                    ))}
+                </div>
+            );
             break;
         case 'add-category':
             action = (
@@ -126,8 +201,8 @@ const Admin = props => {
                     )}
                     {survey.categories.map(({ name, id }) => (
                         <div className='row' key={id}>
-                            <span className='col s8 '>
-                                {name}{' '}
+                            <span style={{ display: 'flex', justifyContent: 'space-between' }} className='col s12 m6 offset-m3'>
+                                <strong>{name} </strong>
                                 <button
                                     onClick={e => {
                                         e.preventDefault();
@@ -152,7 +227,7 @@ const Admin = props => {
         case 'add-admin':
             action = (
                 <div className='row fade' style={{ marginTop: '1rem', paddingTop: '2rem', paddingBottom: '2rem' }}>
-                    <form className='col s6 offset-s3' id='add-admin' onSubmit={addAdmin}>
+                    <form className='col s12 m8 offset-m2' id='add-admin' onSubmit={addAdmin}>
                         <h6 htmlFor='email'>Enter existing user's email</h6>
                         <input value={adminEmail} onChange={e => setAdminEmail(e.target.value)} type='email' required id='email' />
                         <input className='mx-2 waves-effect waves-light btn-large purple darken-4' type='submit' value='Add' />
@@ -178,4 +253,4 @@ const mapStateToProps = state => ({
     auth: state.auth
 });
 
-export default connect(mapStateToProps, { addCategory, deleteSurvey, setError, deleteCategory })(Admin);
+export default connect(mapStateToProps, { addCategory, deleteSurvey, setError, deleteCategory, updateUserByAdmin })(Admin);

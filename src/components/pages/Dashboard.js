@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { fetchUsers } from '../../actions/authActions';
 
 import Spinner from '../layout/Spinner';
 
 const Dashboard = props => {
-    let { user, admin, isAuthenticated, loading } = props.auth;
+    let { user, admin, isAuthenticated, loading, usersForAdmin } = props.auth;
     useEffect(() => {
         if ((!loading && !isAuthenticated) || !user) props.history.push('/');
+        if (isAuthenticated && admin && !usersForAdmin) props.fetchUsers();
         //eslint-disable-next-line
     }, [isAuthenticated]);
 
@@ -128,4 +130,4 @@ const mapStateToProps = state => ({
     auth: state.auth,
     categories: state.survey.categories
 });
-export default connect(mapStateToProps, null)(Dashboard);
+export default connect(mapStateToProps, { fetchUsers })(Dashboard);
