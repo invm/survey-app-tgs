@@ -88,7 +88,7 @@ const Admin = props => {
             action = (
                 <div>
                     {survey.surveys.map(survey => (
-                        <p style={{ padding: '2rem' }} key={survey.id}>
+                        <p style={{ padding: '2rem', display: 'flex', justifyContent: 'space-between' }} key={survey.id}>
                             <span style={{ margin: '1rem' }}>
                                 <strong>Category: </strong>
                                 {survey.category}, <strong>Survey Topic: </strong>
@@ -108,7 +108,7 @@ const Admin = props => {
             action = (
                 <div>
                     {survey.surveys.map(survey => (
-                        <p style={{ padding: '2rem' }} key={survey.id}>
+                        <p style={{ padding: '2rem', display: 'flex', justifyContent: 'space-between' }} key={survey.id}>
                             <span style={{ margin: '1rem' }}>
                                 <strong>Category: </strong>
                                 {survey.category}, <strong>Survey Topic: </strong>

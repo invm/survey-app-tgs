@@ -8,8 +8,7 @@ import Spinner from '../layout/Spinner';
 import { Redirect } from 'react-router-dom';
 
 const MakeSurvey = props => {
-    // @todo REFACTOR!
-    const { error, surveyLoading, surveys } = props.survey;
+    const { error, surveyLoading } = props.survey;
     const { isAuthenticated, role, loading } = props.auth;
     const [survey, setSurvey] = useState({
         id: uuid.v4(),
@@ -40,18 +39,21 @@ const MakeSurvey = props => {
         // eslint-disable-next-line
     }, [error]);
 
-    const [addNewCatInput, setAddNewCatInput] = useState(false); // Switch 'new category input display
-    const [currentQuestion, setCurrentQuestion] = useState({
+    const emptyAnswers = [
+        { id: 0, answer: '', count: 0 },
+        { id: 1, answer: '', count: 0 },
+        { id: 2, answer: '', count: 0 },
+        { id: 3, answer: '', count: 0 }
+    ];
+    const emptyCurrentQuestion = {
         id: uuid.v4(),
         new: true,
         question: '',
-        answers: [
-            { id: 0, answer: '', count: 0 },
-            { id: 1, answer: '', count: 0 },
-            { id: 2, answer: '', count: 0 },
-            { id: 3, answer: '', count: 0 }
-        ]
-    });
+        answers: emptyAnswers
+    };
+
+    const [addNewCatInput, setAddNewCatInput] = useState(false); // Switch 'new category input display
+    const [currentQuestion, setCurrentQuestion] = useState(emptyCurrentQuestion);
     const [newCat, setNewCat] = useState('');
     const categories = props.survey.categories;
 
@@ -106,17 +108,7 @@ const MakeSurvey = props => {
                 ...survey,
                 questions: [...survey.questions, currentQuestion]
             });
-            setCurrentQuestion({
-                id: uuid.v4(),
-                new: true,
-                question: '',
-                answers: [
-                    { id: 0, answer: '', count: 0 },
-                    { id: 1, answer: '', count: 0 },
-                    { id: 2, answer: '', count: 0 },
-                    { id: 3, answer: '', count: 0 }
-                ]
-            });
+            setCurrentQuestion(emptyCurrentQuestion);
         }
     };
 
@@ -139,17 +131,7 @@ const MakeSurvey = props => {
                 })
             ]
         });
-        setCurrentQuestion({
-            id: uuid.v4(),
-            new: true,
-            question: '',
-            answers: [
-                { id: 0, answer: '', count: 0 },
-                { id: 1, answer: '', count: 0 },
-                { id: 2, answer: '', count: 0 },
-                { id: 3, answer: '', count: 0 }
-            ]
-        });
+        setCurrentQuestion(emptyCurrentQuestion);
     };
 
     const handleDeleteQuestion = question => {
@@ -166,10 +148,9 @@ const MakeSurvey = props => {
             await props.editSurvey(survey);
             if (JSON.stringify(edit) !== JSON.stringify(survey)) setTimeout(() => props.history.push(`/surveys/${survey.id}`), 1000);
         } else {
-            let len = surveys.length;
             await props.createSurvey(survey);
             // If added new surveys, force push after addition
-            if (len < surveys.length) props.history.push('/surveys');
+            props.history.push('/surveys');
             // If edited survey, force push after comparison
         }
     };
