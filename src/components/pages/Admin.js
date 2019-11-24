@@ -13,6 +13,7 @@ const Admin = props => {
     const { isAuthenticated, admin, usersForAdmin, loading } = props.auth;
     const surveyLoading = survey.surveyLoading;
     const error = survey.error;
+    const authError = props.auth.error;
     const [newCat, setNewCat] = useState('');
     const [adminEmail, setAdminEmail] = useState('');
     const [userInfo, setUserInfo] = useState({
@@ -26,16 +27,15 @@ const Admin = props => {
     if (!location.action) history.push('/dashboard');
 
     useEffect(() => {
-        console.log('ran');
         (function() {
             var list = document.getElementsByTagName('label');
             for (let item of list) {
                 item.className = 'active';
             }
         })();
-        if (error) props.setError(error);
+        if (error || authError) props.setError(error || authError);
         //eslint-disable-next-line
-    }, [props]);
+    }, [props, error, authError]);
 
     const handleNewCat = e => {
         e.preventDefault();
@@ -160,7 +160,7 @@ const Admin = props => {
                     {usersForAdmin.map(user => (
                         <span key={user.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className='col s12 m6 offset-m3'>
                             <h5>
-                                {user.data.fname} ,{user.data.lname}
+                                {user.data.fname} ,{user.data.lname} - Coupons: {user.data.coupons.length}
                             </h5>
                             <Link to={{ pathname: '/admin', action: 'edit-user' }}>
                                 <button className='mx-1 waves-effect waves-light btn-small purple darken-4'>Edit</button>

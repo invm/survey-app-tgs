@@ -11,6 +11,9 @@ import {
     EDIT_USER_INFO_SUCCESS,
     EDIT_USER_INFO_FAIL,
     EDIT_USER_INFO_ATTEMPT,
+    EDIT_USER_INFO_BY_ADMIN_ATTEMPT,
+    EDIT_USER_INFO_BY_ADMIN_SUCCESS,
+    EDIT_USER_INFO_BY_ADMIN_FAIL,
     CAST_VOTE_SUCCESS,
     REDEEM_COUPON_ATTEMPT,
     REDEEM_COUPON_FAIL,
@@ -45,6 +48,18 @@ export default function(state = initialState, action) {
                 },
                 admin: action.payload.admin
             };
+        case EDIT_USER_INFO_BY_ADMIN_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload.error,
+                usersForAdmin: state.usersForAdmin.map(user => {
+                    if (user.id === action.payload.id) {
+                        user.data = action.payload.data;
+                    }
+                    return user;
+                })
+            };
         case EDIT_USER_INFO_SUCCESS:
             return {
                 ...state,
@@ -58,6 +73,7 @@ export default function(state = initialState, action) {
         case EDIT_USER_INFO_ATTEMPT:
         case REDEEM_COUPON_ATTEMPT:
         case FETCH_USERS_ATTEMPT:
+        case EDIT_USER_INFO_BY_ADMIN_ATTEMPT:
             return {
                 ...state,
                 loading: true
@@ -67,6 +83,7 @@ export default function(state = initialState, action) {
         case EDIT_USER_INFO_FAIL:
         case REDEEM_COUPON_FAIL:
         case FETCH_USERS_FAIL:
+        case EDIT_USER_INFO_BY_ADMIN_FAIL:
         case LOGOUT:
             return {
                 ...state,

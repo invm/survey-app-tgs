@@ -1,4 +1,21 @@
-import { REGISTER_SUCCESS, REGISTER_FAIL, LOGOUT, REGISTER_ATTEMPT, LOGIN_ATTEMPT, LOGIN_SUCCESS, LOGIN_FAIL, EDIT_USER_INFO_ATTEMPT, EDIT_USER_INFO_SUCCESS, EDIT_USER_INFO_FAIL, FETCH_USERS_ATTEMPT, FETCH_USERS_FAIL, FETCH_USERS_SUCCESS } from './types';
+import {
+    REGISTER_SUCCESS,
+    REGISTER_FAIL,
+    LOGOUT,
+    REGISTER_ATTEMPT,
+    LOGIN_ATTEMPT,
+    LOGIN_SUCCESS,
+    LOGIN_FAIL,
+    EDIT_USER_INFO_ATTEMPT,
+    EDIT_USER_INFO_SUCCESS,
+    EDIT_USER_INFO_FAIL,
+    FETCH_USERS_ATTEMPT,
+    FETCH_USERS_FAIL,
+    FETCH_USERS_SUCCESS,
+    EDIT_USER_INFO_BY_ADMIN_ATTEMPT,
+    EDIT_USER_INFO_BY_ADMIN_SUCCESS,
+    EDIT_USER_INFO_BY_ADMIN_FAIL
+} from './types';
 
 import { auth, db } from '../config/fb';
 
@@ -8,18 +25,8 @@ export const register = ({ email, password, fname, lname }) => dispatch => {
         type: REGISTER_ATTEMPT
     });
     auth.createUserWithEmailAndPassword(email, password)
-        .then(credentials => {
-            credentials.user
-                .updateProfile({
-                    displayName: `${fname} ${lname}`
-                })
-                .then(() =>
-                    dispatch({
-                        type: REGISTER_SUCCESS,
-                        payload: credentials.user
-                    })
-                );
-            return db
+        .then(credentials =>
+            db
                 .collection('users')
                 .doc(credentials.user.uid)
                 .set({
@@ -27,8 +34,14 @@ export const register = ({ email, password, fname, lname }) => dispatch => {
                     lname,
                     coupons: [],
                     completedSurveys: []
-                });
-        })
+                })
+                .then(() =>
+                    dispatch({
+                        type: REGISTER_SUCCESS,
+                        payload: credentials.user
+                    })
+                )
+        )
         .catch(error =>
             dispatch({
                 type: REGISTER_FAIL,
@@ -75,18 +88,13 @@ export const logout = () => dispatch => {
 export const updateUser = ({ fname, lname }) => dispatch => {
     dispatch({ type: EDIT_USER_INFO_ATTEMPT });
     var user = auth.currentUser;
-    user.updateProfile({
-        displayName: `${fname} ${lname}`
-    })
-        .then(() => {
-            db.collection('users')
-                .doc(user.uid)
-                .update({
-                    fname: fname,
-                    lname: lname
-                })
-                .then(() => dispatch({ type: EDIT_USER_INFO_SUCCESS, payload: { fname, lname } }));
+    db.collection('users')
+        .doc(user.uid)
+        .update({
+            fname: fname,
+            lname: lname
         })
+        .then(() => dispatch({ type: EDIT_USER_INFO_SUCCESS, payload: { fname, lname } }))
         .catch(error => dispatch({ type: EDIT_USER_INFO_FAIL, payload: error.message }));
 };
 
@@ -107,13 +115,13 @@ export const fetchUsers = () => dispatch => {
 };
 
 export const updateUserByAdmin = ({ id, fname, lname }) => dispatch => {
-    dispatch({ type: EDIT_USER_INFO_ATTEMPT });
+    dispatch({ type: EDIT_USER_INFO_BY_ADMIN_ATTEMPT });
     db.collection('users')
         .doc(id)
         .update({
             fname: fname,
             lname: lname
         })
-        .then(() => dispatch({ type: EDIT_USER_INFO_SUCCESS, payload: { fname, lname } }))
-        .catch(error => dispatch({ type: EDIT_USER_INFO_FAIL, payload: error.message }));
+        .then(() => dispatch({ type: EDIT_USER_INFO_BY_ADMIN_SUCCESS, payload: { id, data: { fname, lname }, error: 'Successfully changed user info.' } }))
+        .catch(error => dispatch({ type: EDIT_USER_INFO_BY_ADMIN_FAIL, payload: error.message }));
 };

@@ -14,7 +14,7 @@ exports.addAdminRole = functions.https.onCall((data, context) => {
                 .setCustomUserClaims(user.uid, {
                     admin: true
                 })
-                .then(() => ({ message: `Successfully made ${user.displayName} an admin.` }))
+                .then(() => ({ message: `Successfully made ${user.fname} an admin.` }))
                 .catch(error => error)
         );
 });
