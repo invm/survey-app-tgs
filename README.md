@@ -1,2 +1,2 @@
 # Survey App
-Simple survey app built with react, redux, firebase funcitons and db.
+Simple survey app built with react, redux, firebase functions and firestore.
